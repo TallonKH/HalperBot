@@ -3,6 +3,8 @@ import copy
 import random
 import re
 
+# TODO add both/bofa to die instantly
+
 emotes = {
     "Duke": "<:duke:688140221992402989>",
     "Contessa": "<:contessa:688143214955331724>",
@@ -23,11 +25,19 @@ def cardFormatter(cds):
             cd = cds[0]
             return f"a{'n' if cd[0] == 'A' else ''} **{cd}**"
 
-        [c1, c2] = cds
-        if(c1 == c2):
-            return f"***Double {c1}s***"
-        else:
-            return f"{cardFormatter([c1])} and {cardFormatter([c2])}"
+        if(len(cds) == 2):
+            [c1,c2] = cds
+            if(c1 == c2):
+                return f"***Double {c1}s***"
+            else:
+                return f"{cardFormatter([c1])} and {cardFormatter([c2])}"
+        elif(len(cds) == 3):
+            [c1,c2, c3] = cds
+            return f"{cardFormatter([c1])}, {cardFormatter([c2])}, and {cardFormatter([c3])}"
+        elif(len(cds) == 4)
+            [c1,c2,c3,c4] = cds
+            return f"{cardFormatter([c1])}, {cardFormatter([c2])}, {cardFormatter([c3])}, and {cardFormatter([c4])}"
+
 
 def coinFormatter(cns):
     return f"**{cns} coin{'' if cns == 1 else 's'}**"
@@ -118,6 +128,8 @@ class CoupInstance:
                 await self.tryReveal(msgData)
             elif(msg.startswith("!cede")):
                 await self.tryCede(msgData)
+            elif(msg.startswith("!income")):
+                await self.tryIncome(msgData)
             elif(msg.startswith("!ambassador") or msg.startswith("!amby")):
                 await self.tryAmbassador(msgData)
             elif(msg.startswith("!trade") or msg.startswith("!exchange") or msg.startswith("swap")):
@@ -149,6 +161,31 @@ class CoupInstance:
                 strs.append(f"**{dnam(player)}** has {cardFormatter(pdat['cards'])}, with {coinFormatter(pdat['coins'])}.")
             await member.send("\n".join(strs))
             return
+
+    async def tryIncome(self, msgData):
+        print("\t\tAttempted income.")
+
+        player = msgData.author
+
+        if(not self.playing):
+            print("\t\t\tFailed income because no game in progress.")
+            await self.channel.send(f"{mention}, you can't income because there is no game in progress!")
+            return
+
+        if(player not in self.players):
+            print(f"\t\t\tFailed to ambassador because not a player.")
+            await self.channel.send(f"{mention}, you can't income because you aren't playing!")
+            return
+
+        if(self.bank == 0):
+            print(f"\t\t\tFailed to income because bank empty.")
+            await self.channel.send(f"{mention}, you can't income because the bank is empty!")
+            return
+
+        self.bank -= 1
+        pdat = self.players[player]
+        pdat["coins"] += 1
+        await self.channel.send(f"**{dname}** incomes. They now have **{pdat['coins']}**. The bank now has **{self.bank}**.")
 
     async def tryAmbassador(self, msgData):
         print(f"\t\tAttempted ambassador.")
@@ -231,12 +268,14 @@ class CoupInstance:
                 disc = pcards.pop(0)
                 self.discarded.append(disc)
                 await self.channel.send(f"**{dname}** discards {cardFormatter([disc])}, leaving them with 1 card.")
+                await player.send(f"You now have {cardFormatter(pcards)}.")
                 return
             if(arg == "2" or arg == "2nd"):
                 print(f"\t\t\tDiscarded 2nd card.")
                 disc = pcards.pop(1)
                 self.discarded.append(disc)
                 await self.channel.send(f"**{dname}** discards {cardFormatter([disc])}, leaving them with 1 card.")
+                await player.send(f"You now have {cardFormatter(pcards)}.")
                 return
 
             print(f"\t\t\tFailed to discard because unknown argument.")
@@ -247,6 +286,7 @@ class CoupInstance:
             disc = pcards.pop()
             self.discarded.append(disc)
             self.playerOrder.remove(player)
+            self.bank += self.players[player]["coins"]
             del self.players[player]
             await self.channel.send(f"**{dname}** discards {cardFormatter([disc])}. They are now out of the game!")
             
@@ -433,12 +473,12 @@ class CoupInstance:
             print(f"\t\t\tCeded 1 coin.")
             pdat["coins"] -= 1
             pdat2["coins"] += 1
-            await self.channel.send(f"**{dname}** gives their last coin to **{dname2}**.\n**{dname}** now has **{pdat['coins']}**, and {dname2} now has **{pdat2['coins']}**.")
+            await self.channel.send(f"**{dname}** gives their last coin to **{dname2}**.\n**{dname}** now has **{pdat['coins']}**, and **{dname2}** now has **{pdat2['coins']}**.")
         else:
             print(f"\t\t\tCeded 2 coin.")
             pdat["coins"] -= 2
             pdat2["coins"] += 2
-            await self.channel.send(f"**{dname}** cedes **2 coins** to **{dname2}**.\n**{dname}** now has **{pdat['coins']}**, and {dname2} now has **{pdat2['coins']}**.")
+            await self.channel.send(f"**{dname}** cedes **2 coins** to **{dname2}**.\n**{dname}** now has **{pdat['coins']}**, and **{dname2}** now has **{pdat2['coins']}**.")
 
     async def tryCoin(self, msgData):
         args = msgData.content.split(" ")[1:]
@@ -508,7 +548,7 @@ class CoupInstance:
             await self.channel.send(f"{msgData.author.mention}, a game is already in progress!")
             return
 
-        if(len(self.players) < 1):  # TODO put this back to 3
+        if(len(self.players) < 3):
             print(
                 f"\t\tFailed to start because only [{len(self.players)}] players.")
             await self.channel.send(f"You need at least 3 players to start!")
@@ -569,7 +609,7 @@ The current order of turns is:\n{self.getTurnOrder()}
 {playerInfos}
 {killedStr}""")
         if(len(self.discarded) > 0):
-            await self.channel.send(f"{''.join(emotes[card] for card in self.discarded)}")
+            await self.channel.send(f"{''.join(emotes[card] for card in sorted(self.discarded))}")
         return
 
     async def tryJoin(self, msgData):
@@ -600,6 +640,7 @@ The current order of turns is:\n{self.getTurnOrder()}
             return
 
         self.players[player] = None
+        self.bank -= 2
         self.playerOrder.append(player)
         print(f"\t\t\t[{name}] joined.")
         await self.channel.send(f"**{dname}** joins the game!")
