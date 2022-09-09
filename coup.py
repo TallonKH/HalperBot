@@ -34,7 +34,7 @@ def cardFormatter(cds):
         elif(len(cds) == 3):
             [c1,c2, c3] = cds
             return f"{cardFormatter([c1])}, {cardFormatter([c2])}, and {cardFormatter([c3])}"
-        elif(len(cds) == 4)
+        elif(len(cds) == 4):
             [c1,c2,c3,c4] = cds
             return f"{cardFormatter([c1])}, {cardFormatter([c2])}, {cardFormatter([c3])}, and {cardFormatter([c4])}"
 
@@ -44,7 +44,7 @@ def coinFormatter(cns):
 
 async def newContext(bot, msgData):
     print("\tStarting a new game of Coup...")
-    await msgData.channel.send("Starting a game of Coup... Type `!join` to join, `!start` to start, or `!help` for a list of all commands!")
+    await msgData.channel.send("Starting a game of Coup... Type `^join` to join, `^start` to start, or `^help` for a list of all commands!")
 
     # TODO start a timer, kill the game if no one joins in time.
 
@@ -102,37 +102,37 @@ class CoupInstance:
         if(dm):
             pass
         else:
-            if(msg.startswith("!play")):
+            if(msg.startswith("^play")):
                 print(
                     f"\t\t[{msg.author.name}] tried to start game when game was already in progress.")
                 await self.channel.send(
                     f"Please exit the existing game before starting a new one!")
 
-            if(msg.startswith("!join")):
+            if(msg.startswith("^join")):
                 await self.tryJoin(msgData)
-            elif(msg.startswith("!start") or msg.startswith("!begin")):
+            elif(msg.startswith("^start") or msg.startswith("^begin")):
                 await self.tryStart(msgData)
-            elif(msg.startswith("!stop") or msg.startswith("!end")):
+            elif(msg.startswith("^stop") or msg.startswith("^end")):
                 await self.tryStop()
-            elif(msg.startswith("!help")):
+            elif(msg.startswith("^help")):
                 await self.tryHelp(msgData)
-            elif(msg.startswith("!query") or msg.startswith("!observe")):
+            elif(msg.startswith("^query") or msg.startswith("^observe")):
                 await self.tryQuery()
-            elif(msg.startswith("!coin")):
+            elif(msg.startswith("^coin")):
                 await self.tryCoin(msgData)
-            elif(msg.startswith("!look")):
+            elif(msg.startswith("^look")):
                 await self.tryLook(msgData)
-            elif(msg.startswith("!discard")):
+            elif(msg.startswith("^discard")):
                 await self.tryDiscard(msgData)
-            elif(msg.startswith("!reveal")):
+            elif(msg.startswith("^reveal")):
                 await self.tryReveal(msgData)
-            elif(msg.startswith("!cede")):
+            elif(msg.startswith("^cede")):
                 await self.tryCede(msgData)
-            elif(msg.startswith("!income")):
+            elif(msg.startswith("^income")):
                 await self.tryIncome(msgData)
-            elif(msg.startswith("!ambassador") or msg.startswith("!amby")):
+            elif(msg.startswith("^ambassador") or msg.startswith("^amby")):
                 await self.tryAmbassador(msgData)
-            elif(msg.startswith("!trade") or msg.startswith("!exchange") or msg.startswith("swap")):
+            elif(msg.startswith("^trade") or msg.startswith("^exchange") or msg.startswith("^swap")):
                 await self.tryTrade(msgData)
 
     async def tryLook(self, msgData):
@@ -259,7 +259,7 @@ class CoupInstance:
         if(len(pcards) == 2):
             if(len(args) == 0):
                 print(f"\t\t\tFailed to discard because 2 cards with no args.")
-                await self.channel.send(f"{mention}, you have 2 cards. Please specify which one to discard! e.g.: `!discard 1` or `!discard 2`")
+                await self.channel.send(f"{mention}, you have 2 cards. Please specify which one to discard! e.g.: `^discard 1` or `^discard 2`")
                 return
 
             arg = args[0]
@@ -279,7 +279,7 @@ class CoupInstance:
                 return
 
             print(f"\t\t\tFailed to discard because unknown argument.")
-            await self.channel.send(f"{mention}, please enter a valid argument! e.g.: `!discard 1` or `!discard 2`")
+            await self.channel.send(f"{mention}, please enter a valid argument! e.g.: `^discard 1` or `^discard 2`")
             return
         else:
             print(f"\t\t\tDiscarded last card.")
@@ -331,7 +331,7 @@ class CoupInstance:
         if(len(pcards) == 2):
             if(len(args) == 0):
                 print(f"\t\t\tFailed to reveal because 2 cards with no args.")
-                await self.channel.send(f"{mention}, you have 2 cards. Please specify which one to reveal! e.g.: `!reveal 1` or `!reveal 2`")
+                await self.channel.send(f"{mention}, you have 2 cards. Please specify which one to reveal! e.g.: `^reveal 1` or `^reveal 2`")
                 return
 
             arg = args[0]
@@ -345,7 +345,7 @@ class CoupInstance:
                 return
 
             print(f"\t\t\tFailed to reveal because unknown argument.")
-            await self.channel.send(f"{mention}, please enter a valid argument! e.g.: `!reveal 1` or `!reveal 2`")
+            await self.channel.send(f"{mention}, please enter a valid argument! e.g.: `^reveal 1` or `^reveal 2`")
             return
         else:
             print(f"\t\t\tRevealed last card.")
@@ -382,7 +382,7 @@ class CoupInstance:
         if(len(pcards) == 2):
             if(len(args) == 0):
                 print(f"\t\t\tFailed to trade because 2 cards with no args.")
-                await self.channel.send(f"{mention}, you have 2 cards. Please specify which one to trade in! e.g.: `!trade 1` or `!trade 2`")
+                await self.channel.send(f"{mention}, you have 2 cards. Please specify which one to trade in! e.g.: `^trade 1` or `^trade 2`")
                 return
 
             arg = args[0]
@@ -402,7 +402,7 @@ class CoupInstance:
                 return
 
             print(f"\t\t\tFailed to trade because unknown argument.")
-            await self.channel.send(f"{mention}, please enter a valid argument! e.g.: `!trade 1` or `!trade 2`")
+            await self.channel.send(f"{mention}, please enter a valid argument! e.g.: `^trade 1` or `^trade 2`")
             return
         else:
             print(f"\t\t\tTraded last card.")
@@ -433,13 +433,13 @@ class CoupInstance:
 
         if(len(args) == 0):
             print(f"\t\t\tFailed to cede because no arguments.")
-            await self.channel.send(f"{mention}, please specify who to cede money to! e.g.: `!cede @thief`")
+            await self.channel.send(f"{mention}, please specify who to cede money to! e.g.: `^cede @thief`")
             return
 
         mens = msgData.mentions
         if(len(mens) == 0):
             print(f"\t\t\tFailed to cede because no mentions.")
-            await self.channel.send(f"{mention}, please use mentions to specify who to cede money to! e.g.: `!cede @thief`")
+            await self.channel.send(f"{mention}, please use mentions to specify who to cede money to! e.g.: `^cede @thief`")
             return
 
         if(pdat["coins"] == 0):
@@ -500,7 +500,7 @@ class CoupInstance:
         
         if(len(args) == 0):
             print(f"\t\t\tFailed to use coin because no arguments.")
-            await self.channel.send(f"{mention}, please specify an argument! e.g.: `!coin +1` or `!coin -3`")
+            await self.channel.send(f"{mention}, please specify an argument! e.g.: `^coin +1` or `^coin -3`")
             return
 
         arg = args[0]
@@ -539,7 +539,7 @@ class CoupInstance:
             return
 
         print(f"\t\t\tFailed to use coin because unparseable argument.")
-        await self.channel.send(f"**{dname}**, please enter a valid argument! e.g.: `!coin +1` or `!coin -3`")
+        await self.channel.send(f"**{dname}**, please enter a valid argument! e.g.: `^coin +1` or `^coin -3`")
         return
 
     async def tryStart(self, msgData):
@@ -560,23 +560,23 @@ class CoupInstance:
         print("\t\tHelp requested.")
         await msgData.author.send(
             f"""```Coup Commands:
-!play coup          : start a new game
-!join               : join the current game
-!start, !begin      : start playing
-!stop, !end         : end the current game
+^play coup          : start a new game
+^join               : join the current game
+^start, ^begin      : start playing
+^stop, ^end         : end the current game
 
-!query, !observe    : look around, see how many coins and cards people have
-!look               : remind yourself of your own cards & coins
+^query, ^observe    : look around, see how many coins and cards people have
+^look               : remind yourself of your own cards & coins
 
-!ambassador, !amby  : grab 2 cards from the deck, pick 0 or 1 of them to keep, and return any 2
-!cede (name)        : give 2 coins to someone else
+^ambassador, !amby  : grab 2 cards from the deck, pick 0 or 1 of them to keep, and return any 2
+^cede (name)        : give 2 coins to someone else
 
-!discard (1 or 2)   : discard a card, leaving it face up
-!reveal (1 or 2)    : show your card to the table
-!trade (1 or 2)     : trade a card for a random one in the deck.
+^discard (1 or 2)   : discard a card, leaving it face up
+^reveal (1 or 2)    : show your card to the table
+^trade (1 or 2)     : trade a card for a random one in the deck.
 
-!coin (+n)          : take n coins from the bank
-!coin (-n)          : spend n coins```""")
+^coin (+n)          : take n coins from the bank
+^coin (-n)          : spend n coins```""")
         return
 
     async def tryQuery(self):
@@ -652,7 +652,7 @@ The current order of turns is:\n{self.getTurnOrder()}
     async def stopGame(self):
         print(f"\t\tEnding game.")
         del self.bot.activeContexts[self.channel]
-        await self.channel.send(f"Ending the game... Type `!play coup` to start a new game!")
+        await self.channel.send(f"Ending the game... Type `^play coup` to start a new game!")
 
     async def startGame(self):
         print(f"\t\tStarting game.")

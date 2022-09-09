@@ -1,6 +1,8 @@
 import discord
 import coup
 import types
+import owo
+import re
 
 client = discord.Client()
 class HalperBot():
@@ -10,7 +12,7 @@ class HalperBot():
         self.userContexts = dict() # map of users to contexts
 
     async def handleMsg(self, msgData):
-        isCommand = msgData.content.startswith("!")
+        isCommand = msgData.content.startswith("^")
         isDM = isinstance(msgData.channel, discord.DMChannel)
 
         if(not (isDM or isCommand)):
@@ -49,15 +51,28 @@ class HalperBot():
                 # no active context: check for new contexts starting
                 msg = msgData.content
 
-                # if(msg.startswith("!@#")):
-                #     msgData.content = "!play coup"
+                # if(msg.startswith("^@#")):
+                #     msgData.content = "^play coup"
                 #     await self.handleMsg(msgData)
-                #     msgData.content = "!start"
+                #     msgData.content = "^start"
                 #     await self.handleMsg(msgData)
                 #     return
 
-                if(msg.startswith("!play coup")):
+                if(msg.startswith("^play coup")):
                     self.activeContexts[msgData.channel] = await coup.newContext(self, msgData)
+                    return
+                if(msg.startswith("^owo")):
+                    num = 1
+                    try:
+                        num = int(msg[4:].strip())
+                        if num < 1 or num > 50:
+                            return
+                    except:
+                        pass
+                    owos = ""
+                    for i in range(num):
+                        owos += owo.getOwO() + " "
+                    await msgData.channel.send(owos)
                     return
             else:
                 # active context: try running the command through it
